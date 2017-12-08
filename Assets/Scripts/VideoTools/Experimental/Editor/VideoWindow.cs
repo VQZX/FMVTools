@@ -7,9 +7,10 @@ namespace VideoTools.Experimental.Editor
 {
     public class VideoWindow : EditorWindow
     {
-
         private static VideoClip editingClip;
         private static VideoClipImporter importer;
+        private static Texture videoTexture;
+        private static Rect rect = new Rect(0, 0, 300 , 300 );
         
         // TODO: Add ability to drag video clip into window
         /// <summary>
@@ -28,7 +29,14 @@ namespace VideoTools.Experimental.Editor
                 DrawTimeline();
                 DrawEventLine();
             }
+        }
 
+        protected virtual void Update()
+        {
+            if (importer.isPlayingPreview)
+            {
+                Repaint();
+            }
         }
 
         /// <summary>
@@ -43,11 +51,14 @@ namespace VideoTools.Experimental.Editor
         /// <summary>
         /// Draws the video clip in the window
         /// </summary>
-        private void DrawVideoClip()
+        private static void DrawVideoClip()
         {
-            GUIContent video = new GUIContent();
-            Texture videoTexture = 
-            
+            videoTexture = importer.GetPreviewTexture();
+            if (videoTexture == null)
+            {
+                return;
+            }
+            EditorGUI.DrawPreviewTexture(rect, videoTexture);
         }
 
         /// <summary>
@@ -84,9 +95,10 @@ namespace VideoTools.Experimental.Editor
             if (editingClip == null)
             {
                 Debug.LogWarning("No video clip selected");
+                return;
             }
-            importer = new VideoClipImporter();
-            importer.
+            importer = (VideoClipImporter)AssetImporter.GetAtPath(editingClip.originalPath);
+            importer.PlayPreview();
         }
 
         [MenuItem("Assets/Edit Video", true)]
