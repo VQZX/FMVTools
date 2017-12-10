@@ -14,7 +14,7 @@ namespace VideoTools.Experimental
             Debug.LogFormat("MethodOneParam {0}", a);
         }
 
-        public void MethodOneParaString(string b)
+        public void MethodOneParamString(string b)
         {
             Debug.LogFormat("MethodOneParam {0}", b);
         }

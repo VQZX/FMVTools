@@ -35,7 +35,26 @@ namespace VideoTools.Experimental.DataStructure
             output = string.Format("{0}\n{1}", output, ObjectParam);
             return output;
         }
-        
+
+        public object GetAppropriateValue(Type type)
+        {
+            if (type == typeof(float))
+            {
+                return FloatParam;
+            }
+            else if ( type == typeof(int))
+            {
+                return IntParam;
+            }
+            else if ( type == typeof(string))
+            {
+                return StringParam;
+            }
+            else
+            {
+                return ObjectParam;
+            }
+        }
         
         // ReSharper disable once InconsistentNaming
         public static string GetXMLFromVideoClip ( VideoClipEvent clipEvent)
