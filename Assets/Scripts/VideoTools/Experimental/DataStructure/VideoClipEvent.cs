@@ -1,0 +1,51 @@
+﻿using System;
+using System.Runtime.Serialization;
+using Flusk.Serialization;
+
+namespace VideoTools.Experimental.DataStructure
+{
+    [DataContract, Serializable]
+    public struct VideoClipEvent
+    {
+        [DataMember]
+        public double Time;
+
+        [DataMember]
+        public string MethodName;
+
+        [DataMember]
+        public float FloatParam;
+
+        [DataMember]
+        public int IntParam;
+
+        [DataMember]
+        public string StringParam;
+
+        [DataMember]
+        public object ObjectParam;
+
+        public override string ToString()
+        {
+            string output = MethodName;
+            output = string.Format("{0}\n{1}", output, Time);
+            output = string.Format("{0}\n{1}", output, FloatParam);
+            output = string.Format("{0}\n{1}", output, IntParam);
+            output = string.Format("{0}\n{1}", output, StringParam);
+            output = string.Format("{0}\n{1}", output, ObjectParam);
+            return output;
+        }
+        
+        
+        // ReSharper disable once InconsistentNaming
+        public static string GetXMLFromVideoClip ( VideoClipEvent clipEvent)
+        {
+            return XMLHelpers.GetXMLFromObject(clipEvent);
+        }
+        
+        public static VideoClipEvent ClipEventFromXml(string xml)
+        {
+            return XMLHelpers.XMLToObject<VideoClipEvent>(xml);
+        }
+    }
+}

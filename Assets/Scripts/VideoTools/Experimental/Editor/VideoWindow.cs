@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
+using VideoTools.Experimental.DataStructure;
 
 namespace VideoTools.Experimental.Editor
 {
@@ -11,6 +12,9 @@ namespace VideoTools.Experimental.Editor
         private static VideoClipImporter importer;
         private static Texture videoTexture;
         private static Rect rect = new Rect(0, 0, 300 , 300 );
+        
+        //For testing
+        private static VideoClipEvent clipEvent;
         
         // TODO: Add ability to drag video clip into window
         /// <summary>
@@ -99,12 +103,31 @@ namespace VideoTools.Experimental.Editor
             }
             importer = (VideoClipImporter)AssetImporter.GetAtPath(editingClip.originalPath);
             importer.PlayPreview();
+            
+            _TestData();
         }
 
         [MenuItem("Assets/Edit Video", true)]
         private static bool ValidateMenuShowWindow()
         {
             return (Selection.activeObject is VideoClip);
+        }
+
+        private static void _TestData()
+        {
+            clipEvent.MethodName = "MethodOneParamInt";
+            clipEvent.IntParam = 7;
+
+            VideoClipEvent otherEvent = new VideoClipEvent();
+            otherEvent.MethodName  = "MethodOneParamString";
+            otherEvent.StringParam = "ThisIsAString";
+            
+            VideoClipEvents events = new VideoClipEvents();
+            events.Add(clipEvent);
+            events.Add(otherEvent);
+
+            string data = VideoClipEvents.GetXml(events);
+            importer.userData = data;
         }
         #endregion
     }

@@ -1,6 +1,8 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
+using VideoTools.Experimental.DataStructure;
 
 namespace VideoTools.Experimental
 {
@@ -10,7 +12,7 @@ namespace VideoTools.Experimental
         /// <summary>
         /// The list of events with associated data
         /// </summary>
-        private VideoClipEvent[] videoClipEvents;
+        private VideoClipEvents clipEvents;
         
         /// <summary>
         /// dummy user data for testing
@@ -54,7 +56,8 @@ namespace VideoTools.Experimental
             player = GetComponent<VideoPlayer>();
             clip = player.clip;
             importer = (VideoClipImporter)AssetImporter.GetAtPath(clip.originalPath);
-            Debug.Log("[VideoClipEventController] "+importer.userData);
+            clipEvents = VideoClipEvents.DeserializeFromXml(importer.userData);
+            Debug.Log(clipEvents.ToString());
             isDirty = true;
         }
 #endif
