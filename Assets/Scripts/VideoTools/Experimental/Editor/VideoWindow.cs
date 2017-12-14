@@ -159,7 +159,7 @@ namespace VideoTools.Experimental.Editor
 
             VideoClipEvents events = new VideoClipEvents {clipEvent, otherEvent};
 
-            videoClipUserData = VideoClipEvents.GetXml(events);
+            videoClipUserData = Serialize(events);
             videoClipImporter.ApplyModifiedPropertiesWithoutUndo();
             ReImportAssets(assetPath);
         }
@@ -177,6 +177,13 @@ namespace VideoTools.Experimental.Editor
                 AssetDatabase.StopAssetEditing();
             }
             OnAssetImportDone(path);
+        }
+
+        private static string Serialize(VideoClipEvents events)
+        {
+            string output = JsonUtility.ToJson(events);
+            Debug.Log(output);
+            return output;
         }
 
         private static void OnAssetImportDone(string path)

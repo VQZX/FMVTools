@@ -68,7 +68,7 @@ namespace VideoTools.Experimental
             player = GetComponent<VideoPlayer>();
             clip = player.clip;
             importer = (VideoClipImporter)AssetImporter.GetAtPath(clip.originalPath);
-            clipEvents = VideoClipEvents.DeserializeFromXml(importer.userData);
+            clipEvents = GetVideoClipEvents(importer.userData);
             isDirty = false;
             AssignEvents();
         }
@@ -114,6 +114,13 @@ namespace VideoTools.Experimental
                     }
                 }
             }
+        }
+
+        private VideoClipEvents GetVideoClipEvents(string data)
+        {
+            VideoClipEvents clipEvents = new VideoClipEvents();
+            JsonUtility.FromJsonOverwrite(data, clipEvents);
+            return clipEvents;
         }
 
         private static bool IsValidArgument(Type[] arguments, ref Type argumentType)

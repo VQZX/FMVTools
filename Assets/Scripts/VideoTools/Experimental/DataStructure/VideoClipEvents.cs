@@ -9,7 +9,8 @@ namespace VideoTools.Experimental.DataStructure
     [DataContract, Serializable]
     public class VideoClipEvents : IList<VideoClipEvent>
     {
-        private readonly List<VideoClipEvent> videoClips = new List<VideoClipEvent>();
+        [DataMember]
+        public List<VideoClipEvent> videoClips = new List<VideoClipEvent>();
 
         public static string GetXml(VideoClipEvents events)
         {
