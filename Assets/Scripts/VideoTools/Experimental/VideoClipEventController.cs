@@ -76,6 +76,7 @@ namespace VideoTools.Experimental
 
         private void AssignEvents()
         {
+            methods = new List<TimeMethod>();
             Component [] attachedComponents = gameObject.GetComponentsInChildren<Component>();
             Type argumentType = default(Type);
             foreach (Component component in attachedComponents)
@@ -109,10 +110,6 @@ namespace VideoTools.Experimental
                                 Debug.Log(methodName);
                                 break;
                             }
-                        }
-                        else
-                        {
-                            Debug.LogFormat("Failed To Find Method: {0}", clipEvent.MethodName);
                         }
                     }
                 }

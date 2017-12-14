@@ -62,6 +62,7 @@ VideoClipImporter:
       source: library/metadata/e2/e2365c81af8b9554eadfeb7baec5f1fc.resource
       offset: 0
       size: 21514147
-  userData: 
+  userData: <?xml version="1.0" encoding="utf-16"?><ArrayOfVideoClipEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"><VideoClipEvent><Time>0</Time><MethodName>MethodOneParamInt</MethodName><FloatParam>0</FloatParam><IntParam>7</IntParam></VideoClipEvent><VideoClipEvent><Time>0</Time><MethodName>MethodOneParamString</MethodName><FloatParam>0</FloatParam><IntParam>0</IntParam><StringParam>ThisIsAString</StringParam></VideoClipEvent></ArrayOfVideoClipEvent>
   assetBundleName: 
   assetBundleVariant: 

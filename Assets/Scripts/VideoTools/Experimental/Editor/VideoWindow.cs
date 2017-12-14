@@ -1,5 +1,4 @@
-﻿using System.Text;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
 using VideoTools.Experimental.DataStructure;
@@ -11,8 +10,41 @@ namespace VideoTools.Experimental.Editor
         private static VideoClip editingClip;
         private static VideoClipImporter importer;
         private static Texture videoTexture;
-        private static Rect rect = new Rect(0, 0, 300 , 300 );
-        
+        private static readonly Rect Rect = new Rect(0, 0, 300 , 300 );
+
+        private static SerializedObject videoClipImporter;
+        private static SerializedProperty userDataSerializedProperty;
+        private static SerializedProperty assetPathSerializedProperty;
+
+        private static string videoClipUserData
+        {
+            get
+            {
+                if (videoClipImporter == null)
+                {
+                    return string.Empty;
+                }
+                VideoClipImporter clipImporter = videoClipImporter.targetObject as VideoClipImporter;
+                return clipImporter != null ? clipImporter.userData : string.Empty;
+            }
+            set
+            {
+                VideoClipImporter clipImporter = videoClipImporter.targetObject as VideoClipImporter;
+                if (clipImporter != null)
+                {
+                    clipImporter.userData = value;
+                }
+            }
+        }
+
+        private static string assetPath
+        {
+            get
+            {
+                var clipImporter = videoClipImporter.targetObject as VideoClipImporter;
+                return clipImporter != null ? clipImporter.assetPath : string.Empty;
+            }
+        }
         //For testing
         private static VideoClipEvent clipEvent;
         
@@ -62,7 +94,7 @@ namespace VideoTools.Experimental.Editor
             {
                 return;
             }
-            EditorGUI.DrawPreviewTexture(rect, videoTexture);
+            EditorGUI.DrawPreviewTexture(Rect, videoTexture);
         }
 
         /// <summary>
@@ -104,6 +136,7 @@ namespace VideoTools.Experimental.Editor
             importer = (VideoClipImporter)AssetImporter.GetAtPath(editingClip.originalPath);
             importer.PlayPreview();
             
+            videoClipImporter = new SerializedObject(importer);
             _TestData();
         }
 
@@ -118,16 +151,37 @@ namespace VideoTools.Experimental.Editor
             clipEvent.MethodName = "MethodOneParamInt";
             clipEvent.IntParam = 7;
 
-            VideoClipEvent otherEvent = new VideoClipEvent();
-            otherEvent.MethodName  = "MethodOneParamString";
-            otherEvent.StringParam = "ThisIsAString";
-            
-            VideoClipEvents events = new VideoClipEvents();
-            events.Add(clipEvent);
-            events.Add(otherEvent);
+            VideoClipEvent otherEvent = new VideoClipEvent
+            {
+                MethodName = "MethodOneParamString",
+                StringParam = "ThisIsAString"
+            };
 
-            string data = VideoClipEvents.GetXml(events);
-            importer.userData = data;
+            VideoClipEvents events = new VideoClipEvents {clipEvent, otherEvent};
+
+            videoClipUserData = VideoClipEvents.GetXml(events);
+            videoClipImporter.ApplyModifiedPropertiesWithoutUndo();
+            ReImportAssets(assetPath);
+        }
+
+        private static void ReImportAssets(string path)
+        {
+            AssetDatabase.WriteImportSettingsIfDirty(path);   
+            try
+            {
+                AssetDatabase.StartAssetEditing();
+                AssetDatabase.ImportAsset(path);       
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+            }
+            OnAssetImportDone(path);
+        }
+
+        private static void OnAssetImportDone(string path)
+        {
+            Debug.LogFormat("Asset import of {0} complete.", path);
         }
         #endregion
     }
