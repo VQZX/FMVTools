@@ -10,7 +10,7 @@ namespace VideoTools.Experimental.Editor
         private static VideoClip editingClip;
         private static VideoClipImporter importer;
         private static Texture videoTexture;
-        private static readonly Rect Rect = new Rect(0, 0, 300 , 300 );
+        private static Rect Rect = new Rect(0, 0, 300 , 300 );
 
         private static SerializedObject videoClipImporter;
         private static SerializedProperty userDataSerializedProperty;
@@ -94,6 +94,7 @@ namespace VideoTools.Experimental.Editor
             {
                 return;
             }
+            Rect = new Rect(0, 0, videoTexture.width * 0.2f, videoTexture.height * 0.2f);
             EditorGUI.DrawPreviewTexture(Rect, videoTexture);
         }
 

@@ -21,7 +21,7 @@ namespace VideoTools.Experimental.Editor
             hasAssigned = true;
         }
 
-        [MenuItem("VideoTools/Force Hierarchy Check")]
+        [RuntimeInitializeOnLoadMethod, MenuItem("VideoTools/Force Hierarchy Check")]
         private static void ForceVideoPlayerCheck()
         {
             VideoPlayer [] players = Object.FindObjectsOfType<VideoPlayer>();
@@ -29,6 +29,8 @@ namespace VideoTools.Experimental.Editor
             {
                 VideoClipEventController controller = player.gameObject.AddSingleComponent<VideoClipEventController>();
                 controller.IsDirty = true;
+                Debug.Log("Statiuc initialized");
+                EditorUtility.SetDirty(controller);
             }
         }
         

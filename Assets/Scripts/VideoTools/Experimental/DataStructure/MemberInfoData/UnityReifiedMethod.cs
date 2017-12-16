@@ -3,12 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using UnityEngine;
 using Object = System.Object;
-using UnityComponent = UnityEngine.MonoBehaviour;
+using UnityComponent = UnityEngine.Component;
+using Param = System.Object;
 
 namespace VideoTools.Experimental.DataStructure.MemberInfoData
 {
     [Serializable]
-    public class UnityReifiedMethod : ReifiedMethodSerializedParam<UnityComponent, Object>
+    public class UnityReifiedMethod : ReifiedMethodSerializedParam<UnityComponent, Param>
     {
         [SerializeField]
         protected MethodInfo methodInfo;
@@ -26,8 +27,8 @@ namespace VideoTools.Experimental.DataStructure.MemberInfoData
         }
 
         [SerializeField]
-        protected Object methodParam;
-        public override Object MethodParam
+        protected Param methodParam;
+        public override Param MethodParam
         {
             get { return methodParam; }
         }
@@ -45,16 +46,9 @@ namespace VideoTools.Experimental.DataStructure.MemberInfoData
         [SuppressMessage("ReSharper", "IsExpressionAlwaysTrue")]
         public override void Invoke()
         {
-            if (callingInstance is MonoBehaviour)
-            {
-                callingInstance.Invoke(methodName, 0);
-            }
-            else if ( callingInstance is Component)
-            {
-                methodInfo.Invoke(
-                    callingInstance, 
-                    methodParam == null ? new object[] { } : new object[] {methodParam});
-            }  
+            methodInfo.Invoke(
+                callingInstance, 
+                methodParam == null ? new object[] { } : new[] {methodParam});  
         }
     }
 }

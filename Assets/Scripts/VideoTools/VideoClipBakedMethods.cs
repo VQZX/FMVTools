@@ -47,6 +47,11 @@ namespace VideoTools
             IsDirty = false;
         }
 
+        public string MethodData()
+        {
+            return clipEvents.ToString();
+        }
+
         public void Initialize()
         {
             importer = (VideoClipImporter)AssetImporter.GetAtPath(clip.originalPath);
@@ -97,7 +102,7 @@ namespace VideoTools
 
         private bool TryToFindMethod(MethodInfo info, string methodName, VideoClipEvent clipEvent, Component component, ref Type argumentType)
         {
-            if (info.GetGenericArguments().Length == 0)
+            if (info.GetParameters().Length == 0)
             {
                 if (ExtractParamaterlessMethod(methodName, clipEvent, info, component))
                 {
@@ -105,27 +110,22 @@ namespace VideoTools
                 }
                 return false;
             }
-            if (!IsValidArgument(info.GetGenericArguments(), ref argumentType))
+            if (!IsValidArgument(info.GetParameters(), ref argumentType))
             {
                 return true;
             }
-            {
-                if (ExtractMethod(methodName, clipEvent, info, component, argumentType))
-                {
-                    return true;
-                }
-                return false;
-            }
+            return ExtractMethod(methodName, clipEvent, info, component, argumentType);
         }
 
         private bool ExtractMethod(string methodName, VideoClipEvent clipEvent, MethodInfo info, Component component, Type argumentType)
         {
+            Debug.Log("Extrtact method");
             if (methodName != clipEvent.MethodName)
             {
                 return true;
             }
             Debug.Log("Method: "+info.GetType());
-            UnityReifiedMethod method = new UnityReifiedMethod(info, (MonoBehaviour)component,
+            UnityReifiedMethod method = new UnityReifiedMethod(info, component,
                 clipEvent.GetAppropriateValue(argumentType));
             TimeMethod timeMethod = new TimeMethod(clipEvent.Time, method);
             methods.Add(timeMethod);
@@ -140,18 +140,18 @@ namespace VideoTools
                 return true;
             }
             Debug.Log("Method: "+info.GetType());
-            UnityReifiedMethod method = new UnityReifiedMethod(info, (MonoBehaviour)component, null);
+            UnityReifiedMethod method = new UnityReifiedMethod(info, component, null);
             TimeMethod timeMethod = new TimeMethod(clipEvent.Time, method);
             methods.Add(timeMethod);
-            Debug.Log(methodName);
+            //Debug.Log(methodName);
             return false;
         }
 
-        private static bool IsValidArgument(Type[] arguments, ref Type argumentType)
+        private static bool IsValidArgument(ParameterInfo[] arguments, ref Type argumentType)
         {
             if (arguments.Length == 1)
             {
-                Type argument = arguments[0];
+                Type argument = arguments[0].ParameterType;
                 bool validType = argument == typeof(float) ||
                                  argument == typeof(int) ||
                                  argument == typeof(string) ||

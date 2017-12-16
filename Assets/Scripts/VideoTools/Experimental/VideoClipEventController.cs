@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 using UnityEngine.Video;
 
 namespace VideoTools.Experimental
@@ -26,7 +27,6 @@ namespace VideoTools.Experimental
             }
         }
 
-#if UNITY_EDITOR
         public void Init()
         {
             if (player == null)
@@ -41,11 +41,11 @@ namespace VideoTools.Experimental
             }
             
             videoClipBakedMethods = new VideoClipBakedMethods(clip);
-            videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>()); 
+            videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());
+            Debug.Log("Initialized");
         }
-#endif
         
-        protected virtual void Awake()
+        protected virtual void Start()
         {
             videoClipBakedMethods.TestMethods();
         }
