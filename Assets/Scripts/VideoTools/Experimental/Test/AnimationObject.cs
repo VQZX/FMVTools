@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using VideoTools.Experimental.DataStructure;
 
 namespace VideoTools.Experimental
 {
     public class AnimationObject : MonoBehaviour
-    {
+    {        
         public void MethodNoParam ()
         {
             Debug.Log("MethodNoParam");

@@ -7,11 +7,13 @@ namespace VideoTools.Experimental.Editor
     public class VideoClipEventControllerEditor : UnityEditor.Editor
     {
         private VideoClipEventController controller;
-
         protected virtual void OnEnable()
         {
             controller = (VideoClipEventController) target;
             controller.hideFlags = HideFlags.HideInInspector;
+            controller.Init();
+            serializedObject.ApplyModifiedProperties();
+            EditorUtility.SetDirty(controller);
         }
     }
 }

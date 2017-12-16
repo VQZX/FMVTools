@@ -7,16 +7,16 @@ namespace VideoTools.Experimental.DataStructure.MemberInfoData
         /// <summary>
         /// The specific method to call
         /// </summary>
-        public MethodInfo MethodInfo { get; protected set; }
+        public virtual MethodInfo MethodInfo { get; protected set; }
 
         /// <summary>
         /// The instance of the object the method resides on
         /// </summary>
-        public T CallingInstance { get; protected set; }
+        public virtual T CallingInstance { get; protected set; }
 
         public ReifiedMethod(MethodInfo methodInfo, T instance)
         {
-            methodInfo = methodInfo;
+            MethodInfo = methodInfo;
             CallingInstance = instance;
         }
 

@@ -8,15 +8,40 @@ namespace VideoTools.Experimental.DataStructure
     public class TimeMethod
     {
         [SerializeField]
-        public double Time { get; protected set; }
-        
+        protected double time;
+        public double Time {get { return time; }}
+
         [SerializeField]
-        public UnityReifiedMethod MethodInfo { get; protected set; }
+        protected UnityReifiedMethod methodInfo;
+        public UnityReifiedMethod MethodInfo
+        {
+            get { return methodInfo; }
+        }
+
+        public bool HasInvoked { get; set; }
 
         public TimeMethod(double time, UnityReifiedMethod method)
         {
-            Time = time;
-            MethodInfo = method;
+            this.time = time;
+            methodInfo = method;
+        }
+
+        public void Reset()
+        {
+            HasInvoked = false;
+        }
+
+        public void TryInvoke(double time)
+        {
+            if (time >= Time && !HasInvoked)
+            {
+                Invoke();
+            }
+        }
+
+        public void Invoke()
+        {
+            MethodInfo.Invoke();
         }
     }
 }
