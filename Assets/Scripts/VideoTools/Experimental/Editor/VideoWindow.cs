@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using System;
+using JetBrains.Annotations;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
 using VideoTools.Experimental.DataStructure;
@@ -180,8 +182,12 @@ namespace VideoTools.Experimental.Editor
             OnAssetImportDone(path);
         }
 
-        private static string Serialize(VideoClipEvents events)
+        private static string Serialize([NotNull] VideoClipEvents events)
         {
+            if (events == null)
+            {
+                throw new ArgumentNullException("events");
+            }
             string output = JsonUtility.ToJson(events);
             Debug.Log(output);
             return output;

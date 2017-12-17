@@ -33,14 +33,11 @@ namespace VideoTools.Experimental.DataStructure.MemberInfoData
             get { return methodParam; }
         }
 
-        private string methodName;
-
         public UnityReifiedMethod(MethodInfo info, UnityComponent instance, Object param) : base(info, instance, param)
         {
             methodInfo = info;
             callingInstance = instance;
             methodParam = param;
-            methodName = info.Name;
         }
 
         [SuppressMessage("ReSharper", "IsExpressionAlwaysTrue")]

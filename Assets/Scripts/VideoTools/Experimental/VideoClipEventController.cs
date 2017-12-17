@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -9,11 +11,17 @@ namespace VideoTools.Experimental
     {       
         [SerializeField, HideInInspector]
         protected VideoClipBakedMethods videoClipBakedMethods;
+
+        [SerializeField, HideInInspector]
+        protected VideoClip clip;
+
+        [SerializeField, HideInInspector]
+        protected string data;
         
         private VideoPlayer player;
-        private VideoClip clip;
-
         private bool isDirty;
+        
+#if UNITY_EDITOR
         public bool IsDirty
         {
             get { return isDirty; }
@@ -26,7 +34,9 @@ namespace VideoTools.Experimental
                 }
             }
         }
+#endif
 
+#if UNITY_EDITOR
         public void Init()
         {
             if (player == null)
@@ -41,13 +51,20 @@ namespace VideoTools.Experimental
             }
             
             videoClipBakedMethods = new VideoClipBakedMethods(clip);
-            videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());
-            Debug.Log("Initialized");
+            data = videoClipBakedMethods.ClipEventData;
+            videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());   
+            EditorUtility.SetDirty(this);
         }
+#endif        
         
         protected virtual void Start()
         {
+            Debug.Log(videoClipBakedMethods.ClipEventData);
+            videoClipBakedMethods = new VideoClipBakedMethods(clip, data);
+            videoClipBakedMethods.GetVideoClipEvents();
+            videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());
             videoClipBakedMethods.TestMethods();
+            Debug.Log(videoClipBakedMethods.ClipEventData);
         }
     }
 }

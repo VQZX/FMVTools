@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Flusk.Extensions;
+﻿using Flusk.Extensions;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
@@ -8,8 +7,8 @@ namespace VideoTools.Experimental.Editor
 {
     public static class HierarchyChangedHandler
     {
-        private static bool hasAssigned = false;
         
+        private static bool hasAssigned = false;
         [MenuItem("VideoTools/Force Hierarchy Check Assignment"), InitializeOnLoadMethod]
         private static void AssignCheck()
         {
@@ -21,15 +20,16 @@ namespace VideoTools.Experimental.Editor
             hasAssigned = true;
         }
 
-        [RuntimeInitializeOnLoadMethod, MenuItem("VideoTools/Force Hierarchy Check")]
+        [MenuItem("VideoTools/Force Hierarchy Check")]
         private static void ForceVideoPlayerCheck()
         {
             VideoPlayer [] players = Object.FindObjectsOfType<VideoPlayer>();
             foreach (VideoPlayer player in players)
             {
                 VideoClipEventController controller = player.gameObject.AddSingleComponent<VideoClipEventController>();
+#if UNITY_EDITOR
                 controller.IsDirty = true;
-                Debug.Log("Statiuc initialized");
+#endif
                 EditorUtility.SetDirty(controller);
             }
         }
@@ -39,11 +39,13 @@ namespace VideoTools.Experimental.Editor
             VideoPlayer [] players = Object.FindObjectsOfType<VideoPlayer>();
             foreach (VideoPlayer player in players)
             {
+#if UNITY_EDITOR
                 VideoClipEventController controller;
                 if (player.gameObject.AddSingleComponent(out controller))
                 {
                     controller.Init();
                 }
+#endif
             }
         }  
     }

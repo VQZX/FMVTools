@@ -11,6 +11,7 @@ namespace VideoTools.Experimental.Editor
 
         public override void OnInspectorGUI()
         {
+            base.OnInspectorGUI();
             EditorUtility.SetDirty(controller);
         }
         
@@ -18,7 +19,9 @@ namespace VideoTools.Experimental.Editor
         {
             controller = (VideoClipEventController) target;
             controller.hideFlags = HideFlags.HideInInspector;
+#if UNITY_EDITOR
             controller.Init();
+#endif
         }
 
         private void OnDisable()

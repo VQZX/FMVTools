@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Video;
 using VideoTools.Experimental.DataStructure;
@@ -19,13 +21,18 @@ namespace VideoTools
         [SerializeField]
         protected VideoClip clip;
 
+        [SerializeField]
+        protected string clipEventData;
+        public string ClipEventData { get { return clipEventData; }}
+        
+#if UNITY_EDITOR
         /// <summary>
         /// The video clip importer that holds the meta data of
         /// the clip
         /// </summary>
         [SerializeField]
         protected VideoClipImporter importer;
-        
+#endif       
         /// <summary>
         /// The list of events with their associated data
         /// </summary>
@@ -47,6 +54,12 @@ namespace VideoTools
             IsDirty = false;
         }
 
+        public VideoClipBakedMethods(VideoClip videoClip, string data)
+        {
+            clip = videoClip;
+            clipEventData = data;
+        }
+
         public string MethodData()
         {
             return clipEvents.ToString();
@@ -54,9 +67,17 @@ namespace VideoTools
 
         public void Initialize()
         {
+#if UNITY_EDITOR
             importer = (VideoClipImporter)AssetImporter.GetAtPath(clip.originalPath);
-            clipEvents = GetVideoClipEvents(importer.userData);
+            clipEventData = importer.userData;
+            GetVideoClipEvents();
+#endif
             IsDirty = false;
+        }
+
+        public void GetVideoClipEvents()
+        {
+            clipEvents = GetVideoClipEvents(clipEventData);
         }
         
         public void AssignEvents(Component [] attachedComponents)
@@ -119,17 +140,14 @@ namespace VideoTools
 
         private bool ExtractMethod(string methodName, VideoClipEvent clipEvent, MethodInfo info, Component component, Type argumentType)
         {
-            Debug.Log("Extrtact method");
             if (methodName != clipEvent.MethodName)
             {
                 return true;
             }
-            Debug.Log("Method: "+info.GetType());
             UnityReifiedMethod method = new UnityReifiedMethod(info, component,
                 clipEvent.GetAppropriateValue(argumentType));
             TimeMethod timeMethod = new TimeMethod(clipEvent.Time, method);
             methods.Add(timeMethod);
-            Debug.Log(methodName);
             return false;
         }
 
@@ -143,7 +161,6 @@ namespace VideoTools
             UnityReifiedMethod method = new UnityReifiedMethod(info, component, null);
             TimeMethod timeMethod = new TimeMethod(clipEvent.Time, method);
             methods.Add(timeMethod);
-            //Debug.Log(methodName);
             return false;
         }
 
