@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -12,11 +13,20 @@ namespace VideoTools.Experimental.Editor
         private static VideoClip editingClip;
         private static VideoClipImporter importer;
         private static Texture videoTexture;
-        private static Rect Rect = new Rect(0, 0, 300 , 300 );
+        private static Rect videoRect = new Rect(0, 0, 300 , 300 );
+        private static Rect playButtonRect = new Rect(10, 10, 50, 30);
+        private static Rect applyButtonRect = new Rect(10, 50, 50, 30);
 
+        private static float multiplier = 0.5f;
         private static SerializedObject videoClipImporter;
         private static SerializedProperty userDataSerializedProperty;
         private static SerializedProperty assetPathSerializedProperty;
+        private static VideoWindow current;
+        private static bool mustPlayPreview;
+
+        private static double totalVideoTime;
+        private static double currentTime;
+        private static double timeAtPlayClicked;
 
         private static string videoClipUserData
         {
@@ -96,8 +106,40 @@ namespace VideoTools.Experimental.Editor
             {
                 return;
             }
-            Rect = new Rect(0, 0, videoTexture.width * 0.2f, videoTexture.height * 0.2f);
-            EditorGUI.DrawPreviewTexture(Rect, videoTexture);
+            Vector2 size = new Vector2(videoTexture.width, videoTexture.height) * multiplier;
+            float xPosition = (current.position.width * 0.5f - size.x * 0.5f);
+            Vector2 position = new Vector2(100, 10);
+            videoRect = new Rect(position, size);
+            bool mustPlay = GUI.Button(playButtonRect, mustPlayPreview ? "Pause" : "Play");
+            
+            if (mustPlay)
+            {
+                mustPlayPreview = !mustPlayPreview;
+                if (mustPlayPreview)
+                {
+                    importer.PlayPreview();
+                    timeAtPlayClicked = EditorApplication.timeSinceStartup;
+                }
+                else
+                {
+                    importer.StopPreview();
+                }
+            }
+            if (mustPlayPreview)
+            {
+                double elapsedTime = EditorApplication.timeSinceStartup - timeAtPlayClicked;
+                string result = string.Format("{0:N2}", elapsedTime);
+                result = string.Format("{0}/{1:N2}", result, totalVideoTime);
+                
+                EditorGUI.LabelField(new Rect(10, current.position.height - 100, 100, 100), result);
+            }
+            EditorGUI.DrawPreviewTexture(videoRect, videoTexture);
+            
+            if (GUI.Button(applyButtonRect, "Apply"))
+            {
+                videoClipImporter.ApplyModifiedPropertiesWithoutUndo();
+                ReImportAssets(assetPath);
+            }
         }
 
         /// <summary>
@@ -123,7 +165,7 @@ namespace VideoTools.Experimental.Editor
         [MenuItem("VideoTools/Video Window")]
         public static void ShowWindow()
         {
-            GetWindow<VideoWindow>();
+           current = GetWindow<VideoWindow>();
         }
         
         [MenuItem("Assets/Edit Video")]
@@ -137,10 +179,8 @@ namespace VideoTools.Experimental.Editor
                 return;
             }
             importer = (VideoClipImporter)AssetImporter.GetAtPath(editingClip.originalPath);
-            importer.PlayPreview();
-            
             videoClipImporter = new SerializedObject(importer);
-            _TestData();
+            totalVideoTime = importer.frameCount / importer.frameRate;
         }
 
         [MenuItem("Assets/Edit Video", true)]
@@ -165,8 +205,7 @@ namespace VideoTools.Experimental.Editor
             VideoClipEvents events = new VideoClipEvents {clipEvent, otherEvent};
 
             videoClipUserData = Serialize(events);
-            videoClipImporter.ApplyModifiedPropertiesWithoutUndo();
-            ReImportAssets(assetPath);
+            
         }
 
         private static void ReImportAssets(string path)
