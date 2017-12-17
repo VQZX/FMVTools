@@ -153,9 +153,11 @@ namespace VideoTools.Experimental.Editor
         {
             clipEvent.MethodName = "MethodOneParamInt";
             clipEvent.IntParam = 7;
+            clipEvent.Time = 10;
 
             VideoClipEvent otherEvent = new VideoClipEvent
             {
+                Time = 5,
                 MethodName = "MethodOneParamString",
                 StringParam = "ThisIsAString"
             };

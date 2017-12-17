@@ -33,10 +33,12 @@ namespace VideoTools.Experimental.DataStructure
 
         public void TryInvoke(double time)
         {
-            if (time >= Time && !HasInvoked)
+            if ( time <= Time || HasInvoked)
             {
-                Invoke();
+                return;
             }
+            Invoke();
+            HasInvoked = true;
         }
 
         public void Invoke()

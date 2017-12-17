@@ -80,6 +80,6 @@ VideoClipImporter:
       source: library/metadata/e2/e2365c81af8b9554eadfeb7baec5f1fc.resource
       offset: 0
       size: 21514147
-  userData: '{"videoClips":[{"Time":0.0,"MethodName":"MethodOneParamInt","FloatParam":0.0,"IntParam":7,"StringParam":""},{"Time":0.0,"MethodName":"MethodOneParamString","FloatParam":0.0,"IntParam":0,"StringParam":"ThisIsAString"}]}'
+  userData: '{"videoClips":[{"Time":10.0,"MethodName":"MethodOneParamInt","FloatParam":0.0,"IntParam":7,"StringParam":""},{"Time":5.0,"MethodName":"MethodOneParamString","FloatParam":0.0,"IntParam":0,"StringParam":"ThisIsAString"}]}'
   assetBundleName: 
   assetBundleVariant: 

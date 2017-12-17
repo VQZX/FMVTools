@@ -97,6 +97,40 @@ namespace VideoTools
                 }
             }
         }
+        
+        /// <summary>
+        /// Tries to invoke all methods if they are valid
+        /// </summary>
+        public void InvokeMethodsByTime(double time)
+        {
+            foreach (TimeMethod timeMethod in methods)
+            {
+                timeMethod.TryInvoke(time);
+            }
+        }
+
+        /// <summary>
+        /// Invokes the method closest to the time (before the time)
+        /// </summary>
+        public void InvokeClosestMethodByTime(double time)
+        {
+            TimeMethod selected = default(TimeMethod);
+            foreach (TimeMethod timeMethod in methods)
+            {
+                if (timeMethod.Time < time)
+                {
+                    selected = timeMethod;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            if (selected != null)
+            {
+                selected.Invoke();
+            }
+        }
 
         public void TestMethods()
         {

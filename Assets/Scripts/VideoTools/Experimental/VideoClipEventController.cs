@@ -18,8 +18,18 @@ namespace VideoTools.Experimental
         [SerializeField, HideInInspector]
         protected string data;
         
+        [SerializeField, HideInInspector]
         private VideoPlayer player;
+        
         private bool isDirty;
+
+        private bool IsPlaying
+        {
+            get
+            {
+                return player != null && player.isPlaying;
+            }
+        }
         
 #if UNITY_EDITOR
         public bool IsDirty
@@ -35,7 +45,26 @@ namespace VideoTools.Experimental
             }
         }
 #endif
+        protected virtual void Awake()
+        {
+            if (player == null)
+            {
+                player = GetComponent<VideoPlayer>();
+            }
+            videoClipBakedMethods = new VideoClipBakedMethods(clip, data);
+            videoClipBakedMethods.GetVideoClipEvents();
+            videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());
+        }
 
+        protected virtual void Update()
+        {
+            if (IsPlaying)
+            {
+                videoClipBakedMethods.InvokeMethodsByTime(player.time);
+            }
+        }
+        
+        
 #if UNITY_EDITOR
         public void Init()
         {
@@ -46,7 +75,6 @@ namespace VideoTools.Experimental
             clip = player.clip;
             if (clip == null)
             {
-                Debug.LogErrorFormat("[VideoClipEventController ({0})] No video clip assigned", gameObject.name);
                 return;
             }
             
@@ -55,16 +83,14 @@ namespace VideoTools.Experimental
             videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());   
             EditorUtility.SetDirty(this);
         }
-#endif        
-        
-        protected virtual void Start()
+
+        private void OnValidate()
         {
-            Debug.Log(videoClipBakedMethods.ClipEventData);
-            videoClipBakedMethods = new VideoClipBakedMethods(clip, data);
-            videoClipBakedMethods.GetVideoClipEvents();
-            videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());
-            videoClipBakedMethods.TestMethods();
-            Debug.Log(videoClipBakedMethods.ClipEventData);
+            if (clip == null || videoClipBakedMethods == null || string.IsNullOrEmpty(data))
+            {
+                Init();
+            }
         }
+#endif    
     }
 }
