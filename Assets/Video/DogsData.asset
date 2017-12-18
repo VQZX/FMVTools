@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18ce744a89a1444fb7af1869d2da5cf1, type: 3}
+  m_Name: DogsData
+  m_EditorClassIdentifier: 
+  videoClip: {fileID: 32900000, guid: e2365c81af8b9554eadfeb7baec5f1fc, type: 3}
+  userData: '{"videoClips":[{"Time":10.0,"MethodName":"MethodOneParamInt","FloatParam":0.0,"IntParam":7,"StringParam":""},{"Time":5.0,"MethodName":"MethodOneParamString","FloatParam":0.0,"IntParam":0,"StringParam":"ThisIsAString"}]}'
+  bakedMethods:
+    clip: {fileID: 32900000, guid: e2365c81af8b9554eadfeb7baec5f1fc, type: 3}
+    clipEventData: '{"videoClips":[{"Time":10.0,"MethodName":"MethodOneParamInt","FloatParam":0.0,"IntParam":7,"StringParam":""},{"Time":5.0,"MethodName":"MethodOneParamString","FloatParam":0.0,"IntParam":0,"StringParam":"ThisIsAString"}]}'
+    importer: {fileID: 3, guid: e2365c81af8b9554eadfeb7baec5f1fc, type: 3}
+    clipEvents:
+      videoClips:
+      - Time: 10
+        MethodName: MethodOneParamInt
+        FloatParam: 0
+        IntParam: 7
+        StringParam: 
+      - Time: 5
+        MethodName: MethodOneParamString
+        FloatParam: 0
+        IntParam: 0
+        StringParam: ThisIsAString
+    methods:
+    - time: 10
+      methodInfo:
+        callingInstance: {fileID: 114658355283234980, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+          type: 2}
+    - time: 5
+      methodInfo:
+        callingInstance: {fileID: 114658355283234980, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+          type: 2}
+  calllingPrefab: {fileID: 1465457741422128, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+    type: 2}
