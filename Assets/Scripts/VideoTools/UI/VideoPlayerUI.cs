@@ -15,7 +15,7 @@ namespace VideoTools.UI
 
         public void OnToggleValueChanged(bool state)
         {
-            if (state)
+            if (!state)
             {
                 player.Play();
             }
@@ -23,7 +23,7 @@ namespace VideoTools.UI
             {
                 player.Pause();
             }
-            toggleText.text = state ? "Pause" : "Play";
+            toggleText.text = !state ? "Pause" : "Play";
         }
     }
 }

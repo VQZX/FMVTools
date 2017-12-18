@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Flusk.Serialization;
+using UnityEngine;
 
 namespace VideoTools.Experimental.DataStructure
 {
@@ -21,6 +22,16 @@ namespace VideoTools.Experimental.DataStructure
         {
             return XMLHelpers.XMLToObject<VideoClipEvents>(xml);
         }
+
+        public static string ObjectToJSON(VideoClipEvents events)
+        {
+            return JsonUtility.ToJson(events);
+        }
+
+        public VideoClipEvents JSONToObject(string json)
+        {
+            return JsonUtility.FromJson<VideoClipEvents>(json);
+        }
        
         public override string ToString()
         {
@@ -30,6 +41,26 @@ namespace VideoTools.Experimental.DataStructure
                 output = string.Format("{0}\n{1}", output, videoClipEvent.ToString());
             }
             return output;
+        }
+
+        public VideoClipEvents(int count)
+        {
+            videoClips = new List<VideoClipEvent>(count);
+        }
+
+        public VideoClipEvents(VideoClipEvents clipEvents)
+        {
+            int count = clipEvents.Count;
+            videoClips = new List<VideoClipEvent>(count);
+            foreach (VideoClipEvent clipEvent in clipEvents)
+            {
+                videoClips.Add(clipEvent);
+            }
+        }
+
+        public VideoClipEvents()
+        {
+            videoClips = new List<VideoClipEvent>();
         }
         
         #region IList implementation
@@ -47,6 +78,16 @@ namespace VideoTools.Experimental.DataStructure
         {
             videoClips.Add(item);
         }
+
+        public void Add(params VideoClipEvent[] items)
+        {
+            int count = items.Length;
+            for (int i = 0; i < count; i++)
+            {
+                Add(items[i]);
+            }
+        }
+        
 
         public void Clear()
         {

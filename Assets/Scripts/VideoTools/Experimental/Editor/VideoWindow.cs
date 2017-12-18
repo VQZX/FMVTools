@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Video;
 using VideoTools.Experimental.DataStructure;
+using VideoTools.Experimental.Editor.Data;
 
 namespace VideoTools.Experimental.Editor
 {
@@ -16,6 +16,8 @@ namespace VideoTools.Experimental.Editor
         private static Rect videoRect = new Rect(0, 0, 300 , 300 );
         private static Rect playButtonRect = new Rect(10, 10, 50, 30);
         private static Rect applyButtonRect = new Rect(10, 50, 50, 30);
+        
+        private static Rect timeLine = new Rect();
 
         private static float multiplier = 0.5f;
         private static SerializedObject videoClipImporter;
@@ -24,9 +26,14 @@ namespace VideoTools.Experimental.Editor
         private static VideoWindow current;
         private static bool mustPlayPreview;
 
+        private static VideoClipEvents videoClipEvents;
+        private static EditorVideoClipEvents editorVideoClipEvents;
+
         private static double totalVideoTime;
         private static double currentTime;
         private static double timeAtPlayClicked;
+
+        private float currentSelectedTime;
 
         private static string videoClipUserData
         {
@@ -67,16 +74,9 @@ namespace VideoTools.Experimental.Editor
         protected virtual void OnGUI()
         {
             titleContent = new GUIContent("Video Editor");
-            if (editingClip == null)
-            {
-                CheckDragging();
-            }
-            else
-            {
-                DrawVideoClip();
-                DrawTimeline();
-                DrawEventLine();
-            }
+            DrawVideoClip();
+            DrawTimeline();
+            DrawEventLine();
         }
 
         protected virtual void Update()
@@ -85,15 +85,6 @@ namespace VideoTools.Experimental.Editor
             {
                 Repaint();
             }
-        }
-
-        /// <summary>
-        /// Allows for a video to be dragged in to window
-        /// if none exists
-        /// </summary>
-        private void CheckDragging()
-        {
-            
         }
 
         /// <summary>
@@ -127,8 +118,13 @@ namespace VideoTools.Experimental.Editor
             }
             if (mustPlayPreview)
             {
-                double elapsedTime = EditorApplication.timeSinceStartup - timeAtPlayClicked;
-                string result = string.Format("{0:N2}", elapsedTime);
+                currentTime = EditorApplication.timeSinceStartup - timeAtPlayClicked;
+                string result = string.Format("{0:N2}", currentTime);
+                if (currentTime >= totalVideoTime)
+                {
+                    importer.StopPreview();
+                    currentTime = 0;
+                }
                 result = string.Format("{0}/{1:N2}", result, totalVideoTime);
                 
                 EditorGUI.LabelField(new Rect(10, current.position.height - 100, 100, 100), result);
@@ -147,7 +143,13 @@ namespace VideoTools.Experimental.Editor
         /// </summary>
         private void DrawTimeline()
         {
-            
+            timeLine = current.position;
+            timeLine.x += timeLine.width * 0.05f;
+            timeLine.width *= 0.7f;
+            timeLine.height = 30f;
+            timeLine.y = videoRect.yMax + 50f;
+            string label = ((float) currentTime).ToTime();
+            currentTime = EditorGUI.Slider(timeLine, label, (float)currentTime, 0f, (float)totalVideoTime);
         }
 
         /// <summary>
@@ -155,7 +157,26 @@ namespace VideoTools.Experimental.Editor
         /// </summary>
         private void DrawEventLine()
         {
+            Rect buttonRect = timeLine;
+            buttonRect.y -= 40f;
+            buttonRect.height = 20f;
+            buttonRect.width = 100f;
+
+            Rect manipTimeline = timeLine;
+            manipTimeline.y += 40;
+            string result = string.Format(" Events: {0}", currentSelectedTime.ToTime());
+            currentSelectedTime = EditorGUI.Slider(manipTimeline, result, currentSelectedTime, 0f,
+                (float)totalVideoTime);
            
+            if (editorVideoClipEvents == null || editorVideoClipEvents.Count > 0)
+            {
+                
+            }
+
+            if (GUI.Button(buttonRect, "Add Event"))
+            {
+                //Show event editor
+            }
         }
 
         #region Static Calls
@@ -202,10 +223,9 @@ namespace VideoTools.Experimental.Editor
                 StringParam = "ThisIsAString"
             };
 
-            VideoClipEvents events = new VideoClipEvents {clipEvent, otherEvent};
-
+            VideoClipEvents events = new VideoClipEvents();
+            events.Add(clipEvent, otherEvent);
             videoClipUserData = Serialize(events);
-            
         }
 
         private static void ReImportAssets(string path)
