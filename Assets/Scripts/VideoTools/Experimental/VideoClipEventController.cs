@@ -20,6 +20,8 @@ namespace VideoTools.Experimental
         
         [SerializeField, HideInInspector]
         private VideoPlayer player;
+
+        private double time;
         
         private bool isDirty;
 
@@ -47,6 +49,7 @@ namespace VideoTools.Experimental
 #endif
         protected virtual void Awake()
         {
+            time = player.time;
             if (player == null)
             {
                 player = GetComponent<VideoPlayer>();
