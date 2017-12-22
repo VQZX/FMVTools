@@ -26,14 +26,16 @@ namespace VideoTools.Experimental.Editor
         private static VideoWindow current;
         private static bool mustPlayPreview;
 
-        private static VideoClipEvents videoClipEvents;
-        private static EditorVideoClipEvents editorVideoClipEvents;
+        private static VideoClipEvents videoClipEvents = new VideoClipEvents();
+        private static EditorVideoClipEvents editorVideoClipEvents = new EditorVideoClipEvents();
 
         private static double totalVideoTime;
         private static double currentTime;
         private static double timeAtPlayClicked;
 
-        private float currentSelectedTime;
+        private double currentSelectedTime;
+        private bool isAddingEvent;
+        private EditorVideoClipEvent currentEvent;
 
         private static string videoClipUserData
         {
@@ -98,7 +100,7 @@ namespace VideoTools.Experimental.Editor
                 return;
             }
             Vector2 size = new Vector2(videoTexture.width, videoTexture.height) * multiplier;
-            float xPosition = (current.position.width * 0.5f - size.x * 0.5f);
+            //float xPosition = (current.position.width * 0.5f - size.x * 0.5f);
             Vector2 position = new Vector2(100, 10);
             videoRect = new Rect(position, size);
             bool mustPlay = GUI.Button(playButtonRect, mustPlayPreview ? "Pause" : "Play");
@@ -133,6 +135,7 @@ namespace VideoTools.Experimental.Editor
             
             if (GUI.Button(applyButtonRect, "Apply"))
             {
+                importer.userData = VideoClipEvents.ObjectToJSON(videoClipEvents);
                 videoClipImporter.ApplyModifiedPropertiesWithoutUndo();
                 ReImportAssets(assetPath);
             }
@@ -157,25 +160,52 @@ namespace VideoTools.Experimental.Editor
         /// </summary>
         private void DrawEventLine()
         {
-            Rect buttonRect = timeLine;
-            buttonRect.y -= 40f;
-            buttonRect.height = 20f;
-            buttonRect.width = 100f;
-
             Rect manipTimeline = timeLine;
             manipTimeline.y += 40;
-            string result = string.Format(" Events: {0}", currentSelectedTime.ToTime());
-            currentSelectedTime = EditorGUI.Slider(manipTimeline, result, currentSelectedTime, 0f,
+            string result = string.Format(" Events: {0}", ((float)currentSelectedTime).ToTime());
+            currentSelectedTime = EditorGUI.Slider(manipTimeline, result, (float)currentSelectedTime, 0f,
                 (float)totalVideoTime);
            
+            Rect buttonRect = manipTimeline;
+            buttonRect.y += 40f;
+            buttonRect.height = 20f;
+            buttonRect.width = 100f;
+            
             if (editorVideoClipEvents == null || editorVideoClipEvents.Count > 0)
             {
                 
             }
-
-            if (GUI.Button(buttonRect, "Add Event"))
+            if (GUI.Button(buttonRect, !isAddingEvent ? "Add Event" : "Save Event"))
             {
-                //Show event editor
+                if (isAddingEvent)
+                {
+                    // save the event
+                    if (editorVideoClipEvents == null)
+                    {
+                        editorVideoClipEvents = new EditorVideoClipEvents();
+                    }
+                    editorVideoClipEvents.Add(currentEvent);
+                    videoClipEvents = editorVideoClipEvents.GetClipEvents();
+                }
+                else
+                {
+                    currentEvent = new EditorVideoClipEvent();                }
+                isAddingEvent = !isAddingEvent;
+            }
+            if (isAddingEvent)
+            {
+                // draw the cancel button
+                Rect cancelButton = buttonRect;
+                cancelButton.x += cancelButton.width + 10f;
+                if (GUI.Button(cancelButton, "Cancel"))
+                {
+                    isAddingEvent = false;
+                }
+                
+                // draw the event data
+                buttonRect.y += 30;
+                currentEvent.clipEvent.Time = currentSelectedTime;
+                currentEvent.DrawVideoClipEvent(ref buttonRect);
             }
         }
 
@@ -241,6 +271,7 @@ namespace VideoTools.Experimental.Editor
                 AssetDatabase.StopAssetEditing();
             }
             OnAssetImportDone(path);
+            HierarchyChangedHandler.ReInit();
         }
 
         private static string Serialize([NotNull] VideoClipEvents events)

@@ -8,10 +8,26 @@ namespace VideoTools.Experimental.Editor.Data
     {
         private VideoClipEvents clipEvents;
 
-        private List<EditorVideoClipEvent> editorClipEvents;
+        private readonly List<EditorVideoClipEvent> editorClipEvents;
         
         public string UserData { get; private set; }
 
+        public EditorVideoClipEvents()
+        {
+            clipEvents = new VideoClipEvents();
+            editorClipEvents = new List<EditorVideoClipEvent>();
+        }
+
+        public VideoClipEvents GetClipEvents()
+        {
+            clipEvents = new VideoClipEvents(Count);
+            foreach (EditorVideoClipEvent editorClipEvent in editorClipEvents)
+            {
+                clipEvents.Add(editorClipEvent.clipEvent);
+            }
+            return clipEvents;
+        }
+        
         public string Assign()
         {
             clipEvents = new VideoClipEvents(Count);
@@ -36,6 +52,13 @@ namespace VideoTools.Experimental.Editor.Data
         public void Add(EditorVideoClipEvent item)
         {
             editorClipEvents.Add(item);
+        }
+
+        public void Add(VideoClipEvent item)
+        {
+            clipEvents.Add(item);
+            EditorVideoClipEvent editorItem = new EditorVideoClipEvent(item);
+            editorClipEvents.Add(editorItem);
         }
 
         public void Clear()

@@ -54,6 +54,8 @@ namespace VideoTools.Experimental
             videoClipBakedMethods = new VideoClipBakedMethods(clip, data);
             videoClipBakedMethods.GetVideoClipEvents();
             videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());
+            
+            Debug.Log(videoClipBakedMethods.MethodData());
         }
 
         protected virtual void Update()

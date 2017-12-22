@@ -33,6 +33,13 @@ namespace VideoTools.Experimental.Editor
                 EditorUtility.SetDirty(controller);
             }
         }
+
+#if UNITY_EDITOR
+        public static void ReInit()
+        {
+            ForceVideoPlayerCheck();
+        }
+#endif
         
         private static void VideoPlayerCheck()
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Flusk.Serialization;
+using Object = UnityEngine.Object;
 
 namespace VideoTools.Experimental.DataStructure
 {
@@ -24,6 +25,25 @@ namespace VideoTools.Experimental.DataStructure
 
         [DataMember]
         public object ObjectParam;
+
+        public Object UnityObjectParam
+        {
+            get
+            {
+                if (ObjectParam is Object)
+                {
+                    return (Object) ObjectParam;
+                }
+                return null;
+            }
+            set
+            {
+                if (value is Object)
+                {
+                    ObjectParam = value;
+                }
+            }
+        }
 
         public override string ToString()
         {
