@@ -9,16 +9,16 @@ namespace Flusk.UI
     public class UIWriter : MonoBehaviour
     {
         [SerializeField]
-        private UnityObject objectToWriteFrom;
+        protected UnityObject objectToWriteFrom;
 
         [SerializeField]
-        private FieldInfo dataToWriteFrom;
+        protected FieldInfo dataToWriteFrom;
 
         [HideInInspector, SerializeField]
-        private string dataObjectName;
+        protected string dataObjectName;
 
         [HideInInspector, SerializeField]
-        private int index;
+        protected int index;
 
         private Text text;
 

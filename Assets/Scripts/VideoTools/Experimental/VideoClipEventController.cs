@@ -21,7 +21,11 @@ namespace VideoTools.Experimental
         [SerializeField, HideInInspector]
         private VideoPlayer player;
 
-        private string time;
+        /// <summary>
+        /// Used through reflection by UIWriter
+        /// </summary>
+        // ReSharper disable once NotAccessedField.Local
+        protected string time;
         
         private bool isDirty;
 
