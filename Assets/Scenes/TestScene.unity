@@ -441,7 +441,7 @@ MonoBehaviour:
   m_CancelButton: Cancel
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
+  m_ForceModuleActive: 1
 --- !u!114 &320803058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -484,6 +484,7 @@ GameObject:
   - component: {fileID: 732287858}
   - component: {fileID: 732287857}
   - component: {fileID: 732287856}
+  - component: {fileID: 732287859}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -548,6 +549,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &732287859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 732287855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a078a3b66e6146d8bec30fa7acd77211, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectToWriteFrom: {fileID: 2018240526}
+  dataObjectName: time
+  index: 12
 --- !u!1 &1084108323
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,7 +839,12 @@ Prefab:
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: videoClipBakedMethods.methods.Array.size
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+        type: 2}
+      propertyPath: videoClipBakedMethods.clipEvents.videoClips.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4848957769487980, guid: 216bf6c3047769e448ea95bdb5bedbd0, type: 2}
       propertyPath: m_LocalPosition.x
@@ -861,32 +881,32 @@ Prefab:
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: videoClipBakedMethods.clipEventData
-      value: '{"videoClips":[{"Time":14.649999618530274,"MethodName":"MethodParamInt","FloatParam":0.0,"IntParam":8,"StringParam":""},{"Time":14.649999618530274,"MethodName":"MethodParamString","FloatParam":0.0,"IntParam":0,"StringParam":"BitchesPlease"}]}'
+      value: '{"videoClips":[{"Time":2.240000009536743,"MethodName":"MethodOneParamString","FloatParam":0.0,"IntParam":0,"StringParam":"Delta"}]}'
       objectReference: {fileID: 0}
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: videoClipBakedMethods.clipEvents.videoClips.Array.data[0].Time
-      value: 14.649999618530273
+      value: 2.240000009536743
       objectReference: {fileID: 0}
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: videoClipBakedMethods.clipEvents.videoClips.Array.data[0].MethodName
-      value: MethodParamInt
+      value: MethodOneParamString
       objectReference: {fileID: 0}
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: videoClipBakedMethods.clipEvents.videoClips.Array.data[0].IntParam
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: videoClipBakedMethods.clipEvents.videoClips.Array.data[1].Time
-      value: 14.649999618530273
+      value: 10.630000114440918
       objectReference: {fileID: 0}
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: videoClipBakedMethods.clipEvents.videoClips.Array.data[1].MethodName
-      value: MethodParamString
+      value: MethodOneParamString
       objectReference: {fileID: 0}
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
@@ -896,25 +916,29 @@ Prefab:
     - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
         type: 2}
       propertyPath: data
-      value: '{"videoClips":[{"Time":14.649999618530274,"MethodName":"MethodParamInt","FloatParam":0.0,"IntParam":8,"StringParam":""},{"Time":14.649999618530274,"MethodName":"MethodParamString","FloatParam":0.0,"IntParam":0,"StringParam":"BitchesPlease"}]}'
+      value: '{"videoClips":[{"Time":2.240000009536743,"MethodName":"MethodOneParamString","FloatParam":0.0,"IntParam":0,"StringParam":"Delta"}]}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+        type: 2}
+      propertyPath: videoClipBakedMethods.methods.Array.data[0].time
+      value: 2.240000009536743
+      objectReference: {fileID: 0}
+    - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+        type: 2}
+      propertyPath: videoClipBakedMethods.methods.Array.data[1].time
+      value: 10.630000114440918
+      objectReference: {fileID: 0}
+    - target: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+        type: 2}
+      propertyPath: videoClipBakedMethods.clipEvents.videoClips.Array.data[0].StringParam
+      value: Delta
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 216bf6c3047769e448ea95bdb5bedbd0, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &2018240524 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1465457741422128, guid: 216bf6c3047769e448ea95bdb5bedbd0,
+--- !u!114 &2018240526 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114760467245898524, guid: 216bf6c3047769e448ea95bdb5bedbd0,
     type: 2}
   m_PrefabInternal: {fileID: 1781724805}
---- !u!114 &2018240525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2018240524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a4d96641383417eb40a1a3e1875522a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  writingText: {fileID: 732287856}
+  m_Script: {fileID: 11500000, guid: 7292a255747d4b1b98d0d6d8139310f3, type: 3}

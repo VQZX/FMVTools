@@ -21,7 +21,7 @@ namespace VideoTools.Experimental
         [SerializeField, HideInInspector]
         private VideoPlayer player;
 
-        private double time;
+        private string time;
         
         private bool isDirty;
 
@@ -49,7 +49,6 @@ namespace VideoTools.Experimental
 #endif
         protected virtual void Awake()
         {
-            time = player.time;
             if (player == null)
             {
                 player = GetComponent<VideoPlayer>();
@@ -57,7 +56,7 @@ namespace VideoTools.Experimental
             videoClipBakedMethods = new VideoClipBakedMethods(clip, data);
             videoClipBakedMethods.GetVideoClipEvents();
             videoClipBakedMethods.AssignEvents(GetComponentsInChildren<Component>());
-            
+            time = player.time.ToTime();
             Debug.Log(videoClipBakedMethods.MethodData());
         }
 
@@ -65,6 +64,7 @@ namespace VideoTools.Experimental
         {
             if (IsPlaying)
             {
+                time = player.time.ToTime();
                 videoClipBakedMethods.InvokeMethodsByTime(player.time);
             }
         }

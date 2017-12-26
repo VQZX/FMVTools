@@ -10,8 +10,11 @@ namespace VideoTools.Experimental.Editor.Data
     public class EditorVideoClipEvent
     {
         public bool isDisplayed;
-
         public VideoClipEvent clipEvent;
+        
+        public Rect TimingIndicator { get; private set; }
+
+        public Texture IndicatorTexture { get; private set; }
         
         public EditorVideoClipEvent(VideoClipEvent clipEvent)
         {
@@ -21,6 +24,28 @@ namespace VideoTools.Experimental.Editor.Data
         public EditorVideoClipEvent()
         {
             clipEvent = default(VideoClipEvent);
+        }
+
+        public void DrawIndicator(Rect rect)
+        {
+            float xPoint = CalculateXCoordinate();
+            Rect xRect = rect;
+            xRect.x = VideoWindow.ManipTimeline.x + xPoint;
+            TimingIndicator = xRect;
+            GUI.DrawTexture(TimingIndicator, IndicatorTexture);
+        }
+
+        public void InteractWithRect(Vector2 mousePosition, ref Rect displayRect)
+        {
+            if (TimingIndicator.Contains(mousePosition))
+            {
+                DrawVideoClipEvent(ref displayRect);
+            }
+        }
+
+        public void SetTexture(Texture texture)
+        {
+            IndicatorTexture = texture;
         }
 
         public void DrawVideoClipEvent(ref Rect rect, float spacing = 25f)
@@ -56,6 +81,13 @@ namespace VideoTools.Experimental.Editor.Data
             clipEvent.ObjectParam = EditorGUI.ObjectField(rect, "Object Param", (Object)clipEvent.ObjectParam, typeof(Object), false);
             rect.y += spacing;
         }
+
+        private float CalculateXCoordinate()
+        {
+            float ratio = (float) (clipEvent.Time / VideoWindow.TotalVideoTime);
+            return VideoWindow.ManipTimeline.width * ratio;
+        }
+        
 
         private static bool ValidMethodName(string name)
         {

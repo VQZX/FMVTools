@@ -14,7 +14,6 @@ namespace Flusk.UI.Editor
         private UIWriter writer;
 
         private SerializedProperty serializedCallingInstance;
-        private SerializedProperty serializedData;
         private SerializedProperty serializedDataName;
         private SerializedProperty serializedIndexName;
 
@@ -71,7 +70,6 @@ namespace Flusk.UI.Editor
         {
             writer = (UIWriter) target;
             serializedCallingInstance = serializedObject.FindProperty(CALLING_INSTANCE);
-            serializedData = serializedObject.FindProperty(DATA);
             serializedDataName = serializedObject.FindProperty(DATA_NAME);
             serializedIndexName = serializedObject.FindProperty(INDEX_PROP);
         }

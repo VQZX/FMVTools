@@ -28,7 +28,7 @@ namespace VideoTools.Experimental.DataStructure
             return JsonUtility.ToJson(events);
         }
 
-        public VideoClipEvents JSONToObject(string json)
+        public static VideoClipEvents JSONToObject(string json)
         {
             return JsonUtility.FromJson<VideoClipEvents>(json);
         }
