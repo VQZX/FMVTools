@@ -32,6 +32,15 @@ The "Add Event" button is there to reveal fields that can be changed to add an e
 You can provide an event name, 
 the time of the event in the video, and a parameter consisting of float, int, string or object.
 
+Any methods added to a video clip need to be present on the object the video clip is playing from.
+This includes children objects.
+
+This allows you have a component that controls audio with a method called PlaySound() and
+another component that spawns objects with a method called CreateLamp(int).
+
+This can be added with their necessary data to the clip as long as the video player with the clip in on
+the same Game Object or a parent Game Object.
+
 ## Built With
 
 * [Unity3d](https://unity3d.com/) - Game Engine
