@@ -30,7 +30,7 @@ namespace VideoTools.Experimental.Editor.Data
         {
             float xPoint = CalculateXCoordinate();
             Rect xRect = rect;
-            xRect.x = VideoWindow.ManipTimeline.x + xPoint;
+            xRect.x = VideoWindow.Current.ManipTimeline.x + xPoint;
             TimingIndicator = xRect;
             GUI.DrawTexture(TimingIndicator, IndicatorTexture);
         }
@@ -84,8 +84,8 @@ namespace VideoTools.Experimental.Editor.Data
 
         private float CalculateXCoordinate()
         {
-            float ratio = (float) (clipEvent.Time / VideoWindow.TotalVideoTime);
-            return VideoWindow.ManipTimeline.width * ratio;
+            float ratio = (float) (clipEvent.Time / VideoWindow.Current.TotalVideoTime);
+            return VideoWindow.Current.ManipTimeline.width * ratio;
         }
         
 

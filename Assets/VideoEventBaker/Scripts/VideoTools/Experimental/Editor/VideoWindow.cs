@@ -1,8 +1,5 @@
-﻿using System;
-using JetBrains.Annotations;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Video;
 using VideoTools.Experimental.DataStructure;
 using VideoTools.Experimental.Editor.Data;
@@ -11,75 +8,33 @@ namespace VideoTools.Experimental.Editor
 {
     public class VideoWindow : EditorWindow
     {
-        private static VideoClip editingClip;
-        private static VideoClipImporter importer;
-        private static Texture videoTexture;
-        private static Rect videoRect = new Rect(0, 0, 300 , 300 );
-        private static Rect playButtonRect = new Rect(10, 10, 50, 30);
-        private static Rect applyButtonRect = new Rect(10, 50, 50, 30);
+        /// <summary>
+        /// The current instance of the video window
+        /// </summary>
+        public static VideoWindow Current { get; private set; }
         
-        private static Rect timeLine = new Rect();
-        public static Rect TimeLine
+        /// <summary>
+        /// The rect representing the timeline slider
+        /// </summary>
+        private Rect timeLine;
+        public Rect TimeLine
         {
             get { return timeLine; }
         }
-        private static Rect manipTimeline = new Rect();
-
-        public static Rect ManipTimeline
+        
+        /// <summary>
+        /// The rect represeting the manipulation slider for events
+        /// </summary>
+        private Rect manipTimeline;
+        public Rect ManipTimeline
         {
             get { return manipTimeline; }
         }
-
-        private static float multiplier = 0.5f;
-        private static SerializedObject videoClipImporter;
-        private static SerializedProperty userDataSerializedProperty;
-        private static SerializedProperty assetPathSerializedProperty;
         
-        private static VideoWindow current;
-        public static VideoWindow Current
-        {
-            get { return current; }
-        }
-
-        private static bool mustPlayPreview;
-
-        private static VideoClipEvents videoClipEvents;
-        private static EditorVideoClipEvents editorVideoClipEvents;
-
-        public static double TotalVideoTime { get; private set; }
-
-        private static double currentTime;
-        private static double timeAtPlayClicked;
-
-        private double currentSelectedTime;
-        private bool isAddingEvent;
-        private EditorVideoClipEvent currentEvent;
-        private Rect timePositionIndicatorTemplateRect = new Rect(10, 10, 10, 10);
-
-        private Vector2 mousePosition;
-
-        private static string VideoClipUserData
-        {
-            get
-            {
-                if (videoClipImporter == null)
-                {
-                    return string.Empty;
-                }
-                VideoClipImporter clipImporter = videoClipImporter.targetObject as VideoClipImporter;
-                return clipImporter != null ? clipImporter.userData : string.Empty;
-            }
-            set
-            {
-                VideoClipImporter clipImporter = videoClipImporter.targetObject as VideoClipImporter;
-                if (clipImporter != null)
-                {
-                    clipImporter.userData = value;
-                }
-            }
-        }
-
-        private static string AssetPath
+        /// <summary>
+        /// The asset path of the video clip
+        /// </summary>
+        private string AssetPath
         {
             get
             {
@@ -87,10 +42,114 @@ namespace VideoTools.Experimental.Editor
                 return clipImporter != null ? clipImporter.assetPath : string.Empty;
             }
         }
-        //For testing
-        private static VideoClipEvent clipEvent;
         
-        // TODO: Add ability to drag video clip into window
+        /// <summary>
+        /// The length of the video clip
+        /// </summary>
+        public double TotalVideoTime { get; private set; }
+        
+        /// <summary>
+        /// The clip we are editing
+        /// </summary>
+        private VideoClip editingClip;
+        
+        /// <summary>
+        /// The importer used to bake information into the clip
+        /// </summary>
+        private VideoClipImporter importer;
+        
+        /// <summary>
+        /// The list of video clip events to be tracked
+        /// </summary>
+        private VideoClipEvents videoClipEvents;
+        
+        /// <summary>
+        /// The list of editor video clips which contain the video clip events
+        /// as well as special logic for editor UI
+        /// </summary>
+        private EditorVideoClipEvents editorVideoClipEvents;
+        
+        /// <summary>
+        /// The serialized object representing the <see cref="importer"/>
+        /// </summary>
+        private SerializedObject videoClipImporter;
+        
+        /// <summary>
+        /// The serialized property representing the baked information
+        /// </summary>
+        private SerializedProperty userDataSerializedProperty;
+        
+        /// <summary>
+        /// The serialized property represeting the video clip path
+        /// </summary>
+        private SerializedProperty assetPathSerializedProperty;
+        
+        /// <summary>
+        /// The preview texture printed to the screen
+        /// </summary>
+        private Texture videoTexture;
+        
+        /// <summary>
+        /// The rect that we draw the video texture to
+        /// </summary>
+        private Rect videoRect = new Rect(0, 0, 300 , 300 );
+        
+        /// <summary>
+        /// The rect representing the play button position and dimensions
+        /// </summary>
+        private readonly Rect playButtonRect = new Rect(10, 10, 50, 30);
+        
+        /// <summary>
+        /// The rect representing the apply button position and dimensions
+        /// </summary>
+        private readonly Rect applyButtonRect = new Rect(10, 50, 50, 30);
+
+        /// <summary>
+        /// Tracks if we have set the play the preview to play
+        /// </summary>
+        private bool mustPlayPreview;
+
+        /// <summary>
+        /// A multiplier for controlling how much bigger or smaller the displayed video rect must be compared 
+        /// to the actual video
+        /// </summary>
+        private const float VIDEO_SIZE_MULTIPLIER = 0.5f;
+        
+        /// <summary>
+        /// The time that the preview began playing
+        /// </summary>
+        private double timeAtPlayClicked;
+        
+        /// <summary>
+        /// The current time of the playback preview
+        /// </summary>
+        private double currentTime;
+        
+        /// <summary>
+        /// The currently selected time for adding events 
+        /// </summary>
+        private double currentSelectedTime;
+        
+        /// <summary>
+        /// Tracks if the UI for adding an event is active
+        /// </summary>
+        private bool isAddingEvent;
+        
+        /// <summary>
+        /// Tracks the current event being added or edited
+        /// </summary>
+        private EditorVideoClipEvent currentEvent;
+        
+        /// <summary>
+        /// The template rect for the event point indicators
+        /// </summary>
+        private Rect timePositionIndicatorTemplateRect = new Rect(10, 10, 10, 10);
+
+        /// <summary>
+        /// The current mouse position
+        /// </summary>
+        private Vector2 mousePosition;
+
         /// <summary>
         /// Draws the video to the scene with a timeline
         /// </summary>
@@ -107,6 +166,9 @@ namespace VideoTools.Experimental.Editor
             DrawEventLine();
         }
 
+        /// <summary>
+        /// When the preview is playing we need to constantly repaint
+        /// </summary>
         protected virtual void Update()
         {
             if (importer != null && importer.isPlayingPreview)
@@ -114,8 +176,11 @@ namespace VideoTools.Experimental.Editor
                 Repaint();
             }
         }
-
-        private void OnEnable()
+        
+        /// <summary>
+        /// Initialisate the lists when the window is created
+        /// </summary>
+        protected virtual void OnEnable()
         {
             videoClipEvents = new VideoClipEvents();
             editorVideoClipEvents = new EditorVideoClipEvents();
@@ -123,18 +188,18 @@ namespace VideoTools.Experimental.Editor
 
         /// <summary>
         /// Draws the video clip in the window
+        /// And draws the Play/Pause buttons, the Apply button for saving the data to the video clip metadata
         /// </summary>
-        private static void DrawVideoClip()
+        private void DrawVideoClip()
         {
             videoTexture = importer.GetPreviewTexture();
             if (videoTexture == null)
             {
                 return;
             }
-            Vector2 size = new Vector2(videoTexture.width, videoTexture.height) * multiplier;
-            //float xPosition = (current.position.width * 0.5f - size.x * 0.5f);
-            Vector2 position = new Vector2(100, 10);
-            videoRect = new Rect(position, size);
+            Vector2 size = new Vector2(videoTexture.width, videoTexture.height) * VIDEO_SIZE_MULTIPLIER;
+            Vector2 videoPosition = new Vector2(100, 10);
+            videoRect = new Rect(videoPosition, size);
             bool mustPlay = GUI.Button(playButtonRect, mustPlayPreview ? "Pause" : "Play");
             
             if (mustPlay)
@@ -155,7 +220,10 @@ namespace VideoTools.Experimental.Editor
             }
         }
 
-        private static void PlayPreview()
+        /// <summary>
+        /// Plays the preview
+        /// </summary>
+        private void PlayPreview()
         {
             currentTime = EditorApplication.timeSinceStartup - timeAtPlayClicked;
             string result = string.Format("{0:N2}", currentTime);
@@ -165,10 +233,13 @@ namespace VideoTools.Experimental.Editor
                 currentTime = 0;
             }
             result = string.Format("{0}/{1:N2}", result, TotalVideoTime);
-            EditorGUI.LabelField(new Rect(10, current.position.height - 100, 100, 100), result);
+            EditorGUI.LabelField(new Rect(10, Current.position.height - 100, 100, 100), result);
         }
 
-        private static void ChangePlayState()
+        /// <summary>
+        /// Determines whether the video will play or not
+        /// </summary>
+        private void ChangePlayState()
         {
             mustPlayPreview = !mustPlayPreview;
             if (mustPlayPreview)
@@ -187,7 +258,7 @@ namespace VideoTools.Experimental.Editor
         /// </summary>
         private void DrawTimeline()
         {
-            timeLine = current.position;
+            timeLine = Current.position;
             timeLine.x = timeLine.width * 0.1f;
             timeLine.width *= 0.7f;
             timeLine.height = 30f;
@@ -229,6 +300,10 @@ namespace VideoTools.Experimental.Editor
             }
         }
 
+        // ReSharper disable once InconsistentNaming
+        /// <summary>
+        /// Draws the UI for adding or editing an event
+        /// </summary>
         private void DrawAddEventGUI(Rect buttonRect, Rect displayRect)
         {
             // draw the cancel button
@@ -244,6 +319,9 @@ namespace VideoTools.Experimental.Editor
             currentEvent.DrawVideoClipEvent(ref displayRect);
         }
 
+        /// <summary>
+        /// Determines whether the add event UI should be drawn
+        /// </summary>
         private void ChangeAddingEventState()
         {
             if (isAddingEvent)
@@ -267,65 +345,56 @@ namespace VideoTools.Experimental.Editor
         /// <summary>
         /// The method to dispaly the window
         /// </summary>
-        [MenuItem("VideoTools/Video Window")]
+        [MenuItem("VideoTools/Video Window"), MenuItem("Assets/Edit Video")]
         public static void ShowWindow()
         {
-           current = GetWindow<VideoWindow>();
-           current.wantsMouseMove = true;
+           Current = GetWindow<VideoWindow>();
            Initialize();
         }
-        
-        [MenuItem("Assets/Edit Video")]
-        public static void MenuShowWindow()
-        {
-            ShowWindow();
-        }
 
+        /// <summary>
+        /// Sets the video clip to edit,
+        /// Sets the importer,
+        /// Caches the video clip length
+        /// Caches the user data in a serialized property
+        /// Initializes the editor video clip events
+        /// </summary>
         private static void Initialize()
         {
-            current.wantsMouseMove = true;
-            editingClip = (Selection.activeObject as VideoClip);
-            if (editingClip == null)
+            Current.wantsMouseMove = true;
+            Current.editingClip = (Selection.activeObject as VideoClip);
+            if (Current.editingClip == null)
             {
-                var videoPlayer = GameObject.FindObjectOfType<VideoPlayer>();
-                editingClip = videoPlayer.clip;
-                if (editingClip == null)
+                var videoPlayer = FindObjectOfType<VideoPlayer>();
+                Current.editingClip = videoPlayer.clip;
+                if (Current.editingClip == null)
                 {
                     Debug.LogError("No clip selected");
+                    return;
                 }
             }
-            importer = (VideoClipImporter) AssetImporter.GetAtPath(editingClip.originalPath);
-            videoClipImporter = new SerializedObject(importer);
-            TotalVideoTime = importer.frameCount / importer.frameRate;
+            Current.importer = (VideoClipImporter) AssetImporter.GetAtPath(Current.editingClip.originalPath);
+            Current.videoClipImporter = new SerializedObject(Current.importer);
+            Current.TotalVideoTime = Current.importer.frameCount / Current.importer.frameRate;
 
-            string userData = importer.userData;
-            videoClipEvents = VideoClipEvents.JSONToObject(userData);
-            editorVideoClipEvents = new EditorVideoClipEvents(videoClipEvents);
+            string userData = Current.importer.userData;
+            Current.videoClipEvents = VideoClipEvents.JSONToObject(userData);
+            Current.editorVideoClipEvents = new EditorVideoClipEvents(Current.videoClipEvents);
         }
 
+        /// <summary>
+        /// A check for enabling/disabling the asset menu "Edit Video" option
+        /// </summary>
         [MenuItem("Assets/Edit Video", true)]
         private static bool ValidateMenuShowWindow()
         {
             return (Selection.activeObject is VideoClip);
         }
 
-        private static void _TestData()
-        {
-            clipEvent.MethodName = "MethodOneParamInt";
-            clipEvent.IntParam = 7;
-            clipEvent.Time = 10;
-
-            VideoClipEvent otherEvent = new VideoClipEvent
-            {
-                Time = 5,
-                MethodName = "MethodOneParamString",
-                StringParam = "ThisIsAString"
-            };
-
-            VideoClipEvents events = new VideoClipEvents {{clipEvent, otherEvent}};
-            VideoClipUserData = Serialize(events);
-        }
-
+        /// <summary>
+        /// Reimports the video clip asset if it is dirty,
+        /// saving any changed userData in the process
+        /// </summary>
         private static void ReImportAssets(string path)
         {
             AssetDatabase.WriteImportSettingsIfDirty(path);   
@@ -341,18 +410,10 @@ namespace VideoTools.Experimental.Editor
             OnAssetImportDone(path);
             HierarchyChangedHandler.ReInit();
         }
-
-        private static string Serialize([NotNull] VideoClipEvents events)
-        {
-            if (events == null)
-            {
-                throw new ArgumentNullException("events");
-            }
-            string output = JsonUtility.ToJson(events);
-            Debug.Log(output);
-            return output;
-        }
-
+        
+        /// <summary>
+        /// Callback when the import process has completed
+        /// </summary>
         private static void OnAssetImportDone(string path)
         {
             Debug.LogFormat("Asset import of {0} complete.", path);

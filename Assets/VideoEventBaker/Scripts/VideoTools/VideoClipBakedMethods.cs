@@ -45,6 +45,9 @@ namespace VideoTools
         [SerializeField]
         protected List<TimeMethod> methods = new List<TimeMethod>();
         
+        /// <summary>
+        /// Tracks if the data is dirtied
+        /// </summary>
         public bool IsDirty { get; protected set; }
 
         public VideoClipBakedMethods(VideoClip videoClip)
@@ -65,6 +68,9 @@ namespace VideoTools
             return clipEvents.ToString();
         }
 
+        /// <summary>
+        /// Grabs the data from the clip and serializes it into objects
+        /// </summary>
         public void Initialize()
         {
 #if UNITY_EDITOR
@@ -74,12 +80,28 @@ namespace VideoTools
 #endif
             IsDirty = false;
         }
-
+        
         public void GetVideoClipEvents()
         {
             clipEvents = GetVideoClipEvents(clipEventData);
         }
         
+        /// <summary>
+        /// Parses the JSON of the userData into VideoClipEvents
+        /// </summary>
+        protected static VideoClipEvents GetVideoClipEvents(string data)
+        {
+            VideoClipEvents clipEvents = new VideoClipEvents();
+            JsonUtility.FromJsonOverwrite(data, clipEvents);
+            return clipEvents;
+        }
+        
+        /// <summary>
+        /// Parses all the attachedComponents for methods and checks them against the 
+        /// videoClipEvents. 
+        /// If valid, adds them to <see cref="methods"/> for caching.
+        /// These are the methods that will be fired off.
+        /// </summary>
         public void AssignEvents(Component [] attachedComponents)
         {
             methods = new List<TimeMethod>();
@@ -132,6 +154,9 @@ namespace VideoTools
             }
         }
 
+        /// <summary>
+        /// Runs all the methods to check they work
+        /// </summary>
         public void TestMethods()
         {
             foreach (TimeMethod method in methods)
@@ -140,6 +165,7 @@ namespace VideoTools
             }
         }
         
+        //
         private Type SearchMethods(MethodInfo[] infos, VideoClipEvent clipEvent, Component component, Type argumentType)
         {
             foreach (var methodBase in infos)
@@ -215,11 +241,6 @@ namespace VideoTools
             return false;
         }
         
-        protected static VideoClipEvents GetVideoClipEvents(string data)
-        {
-            VideoClipEvents clipEvents = new VideoClipEvents();
-            JsonUtility.FromJsonOverwrite(data, clipEvents);
-            return clipEvents;
-        }
+        
     }
 }
